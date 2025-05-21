@@ -947,8 +947,13 @@ static int handle_incoming_sdp(struct ast_sip_session *session, const pjmedia_sd
 				if (!resolved_stream || ast_format_cap_empty(ast_stream_get_formats(resolved_stream))) {
 					ast_stream_free(resolved_stream); /* Can handle NULL */
 					stream = ast_stream_alloc(stream_name, type);
-					handled = 0;
-					SCOPE_EXIT_LOG_EXPR(goto end, LOG_ERROR, "No common codecs between incoming SDP offer and endpoint configuration.\n");
+					if (i == 0) {
+						/*
+						 * FIXME Reject session with 488 only if first stream has no common codecs. Otherwise just reject streams.
+						 */
+						handled = 0;
+						SCOPE_EXIT_LOG_EXPR(goto end, LOG_ERROR, "No common codecs between incoming SDP offer and endpoint configuration.\n");
+					}
 				} else {
 					stream = ast_stream_clone(resolved_stream, stream_name);
 				}
