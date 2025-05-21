@@ -59,7 +59,14 @@ struct ast_format_cap;
 /*!
  * \brief The topology of a set of streams
  */
-struct ast_stream_topology;
+struct ast_stream_topology {
+	/*!
+	 * \brief A vector of all the streams in this topology
+	 */
+	AST_VECTOR(, struct ast_stream *) streams;
+	/*! Indicates that this topology should not have further operations applied to it. */
+	int final;
+};
 
 /*!
  * \brief A mapping of two topologies.

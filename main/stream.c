@@ -120,15 +120,6 @@ struct ast_stream {
 	char name[0];
 };
 
-struct ast_stream_topology {
-	/*!
-	 * \brief A vector of all the streams in this topology
-	 */
-	AST_VECTOR(, struct ast_stream *) streams;
-	/*! Indicates that this topology should not have further operations applied to it. */
-	int final;
-};
-
 const char *ast_stream_codec_prefs_to_str(const struct ast_stream_codec_negotiation_prefs *prefs, struct ast_str **buf)
 {
 	if (!prefs || !buf || !*buf) {

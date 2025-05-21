@@ -1523,7 +1523,9 @@ static struct ast_channel *wait_for_answer(struct ast_channel *in,
 							ast_channel_early_bridge(in, c);
 						}
 						if (!(pa->sentringing) && !ast_test_flag64(outgoing, OPT_MUSICBACK) && ast_strlen_zero(opt_args[OPT_ARG_RINGBACK])) {
-							ast_indicate(in, AST_CONTROL_RINGING);
+							struct ast_stream_topology *top = ao2_bump(ast_channel_get_stream_topology(c));
+							ast_indicate_data(in, AST_CONTROL_RINGING, top, sizeof(*top));
+							ao2_ref(top, -1);
 							pa->sentringing++;
 						}
 						if (!sent_ring) {
@@ -1556,9 +1558,7 @@ static struct ast_channel *wait_for_answer(struct ast_channel *in,
 					if (!ast_test_flag64(outgoing, OPT_RINGBACK)) {
 						if (single || (!single && !pa->sentringing)) {
 							struct ast_stream_topology *top = ao2_bump(ast_channel_get_stream_topology(c));
-							ast_channel_lock(in);
-							ast_channel_tech(in)->indicate(in, AST_CONTROL_PROGRESS, top, 0);
-							ast_channel_unlock(in);
+							ast_indicate_data(in, AST_CONTROL_PROGRESS, top, sizeof(*top));
 							ao2_ref(top, -1);
 						}
 					}
